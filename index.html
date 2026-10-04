@@ -45,8 +45,8 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 @keyframes blink{50%{opacity:0}}
 [lang="zh-Hans"]{font-family:var(--cjk)}
 
-/* start screen (arcade title + mini runner) */
-#boot{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px 16px;overflow:hidden}
+/* start screen (arcade title + mini runner): above .menubar (900) and .dock (800), below #wipe (2000) */
+#boot{position:fixed;inset:0;z-index:1000;background:var(--bg);display:grid;place-items:center;padding:24px 16px;overflow:hidden}
 #boot.gone{display:none}
 #stars{position:absolute;inset:0;font-family:var(--mono);font-size:12px;line-height:14px;color:#5e584d;white-space:pre;pointer-events:none;overflow:hidden}
 .boot-in{position:relative;width:100%;max-width:720px;text-align:center}
@@ -217,6 +217,7 @@ button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-a
 .crow a:hover{text-decoration:underline}
 .copy{font-size:12px;padding:3px 9px;border-radius:6px;background:rgba(255,255,255,.08)}
 .copy:hover{background:rgba(255,255,255,.15)}
+@media(max-width:719px){.crow{grid-template-columns:72px 1fr auto}.crow a{white-space:normal;overflow-wrap:anywhere}}
 
 /* readme + terminal */
 .txt{font-family:var(--mono);font-size:13px;line-height:1.65;padding:18px 20px;white-space:pre-wrap;color:#dcd7ca}
@@ -335,7 +336,7 @@ html:not(.js) .win{position:static;width:auto;height:auto;margin:16px;display:bl
     <button type="button" class="icon" data-open="terminal"><svg aria-hidden="true"><use href="#i-term"/></svg><span class="lbl">Terminal</span></button>
   </div>
 </main>
-<p class="hint" id="hint">drag the name to spin it / click a folder</p>
+<p class="hint" id="deskHint">drag the name to spin it / click a folder</p>
 
 <!-- ======================= windows ======================= -->
 
@@ -559,13 +560,13 @@ currently building: <span class="amber">tai</span></div>
   function $(id){ return document.getElementById(id); }
   var isPhone = function(){ return window.matchMedia("(max-width:719px)").matches; };
 
-  /* ---------- start screen: arcade title, menu, starfield, mini runner (once per session, ?intro forces it) ---------- */
+  /* ---------- start screen: arcade title, menu, starfield, mini runner (once per session, ?intro forces it unless reduced motion) ---------- */
   (function intro(){
     var boot = document.getElementById("boot");
     var seen = false;
     try { seen = sessionStorage.getItem("booted") === "1"; } catch(e){}
     var force = /[?&]intro\b/.test(location.search);
-    if ((reduce || seen) && !force) { boot.classList.add("gone"); window.__introDone = true; return; }
+    if (reduce || (seen && !force)) { boot.classList.add("gone"); window.__introDone = true; return; }
     try { sessionStorage.setItem("booted", "1"); } catch(e){}
 
     function $(id){ return document.getElementById(id); }
@@ -1337,7 +1338,7 @@ currently building: <span class="amber">tai</span></div>
   }
 
   /* ---- hint fades after the first real interaction ---- */
-  var hintEl = $("hint");
+  var hintEl = $("deskHint");
   function hideHint(){ hintEl.classList.add("gone"); }
   setTimeout(hideHint, 14000);
 
