@@ -1,0 +1,1389 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Carl Gao</title>
+<meta name="description" content="Carl Gao (高世钦). Builder and founder. Currently building tai.">
+<meta name="theme-color" content="#0a0a09">
+<script>document.documentElement.classList.add("js")</script>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0a09'/%3E%3Ctext x='16' y='22' font-family='monospace' font-size='15' font-weight='700' fill='%23ffb347' text-anchor='middle'%3Ecg%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@900&text=%E9%AB%98%E4%B8%96%E9%92%A6&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0a0a09;
+  --fg:#ece7da;
+  --dim:#7a7468;
+  --line:#2f2c27;
+  --amber:#ffb347;
+  --amber-soft:rgba(255,179,71,.12);
+  --mono:'JetBrains Mono',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --ui:-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+  --cjk:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif;
+  --win:rgba(30,30,33,.84);
+  --win-border:rgba(255,255,255,.11);
+  --win-text:#e9e9ec;
+  --win-dim:#9c9ca5;
+  --hair:rgba(255,255,255,.07);
+  --sel:#2f7cf6;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg);color:var(--fg);font-family:var(--ui);-webkit-font-smoothing:antialiased}
+body{background:var(--bg);line-height:1.5}
+.js body{overflow:hidden;height:100vh;height:100dvh;user-select:none;-webkit-user-select:none}
+.js .win-body{user-select:text;-webkit-user-select:text}
+::selection{background:var(--amber);color:var(--bg)}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;text-align:left}
+[hidden]{display:none!important}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.dim{color:var(--dim)}
+.amber{color:var(--amber)}
+@keyframes blink{50%{opacity:0}}
+[lang="zh-Hans"]{font-family:var(--cjk)}
+
+/* start screen (arcade title + mini runner) */
+#boot{position:fixed;inset:0;z-index:100;background:var(--bg);display:grid;place-items:center;padding:24px 16px;overflow:hidden}
+#boot.gone{display:none}
+#stars{position:absolute;inset:0;font-family:var(--mono);font-size:12px;line-height:14px;color:#5e584d;white-space:pre;pointer-events:none;overflow:hidden}
+.boot-in{position:relative;width:100%;max-width:720px;text-align:center}
+#logo{font-family:var(--mono);line-height:1;color:var(--amber);white-space:pre;text-align:left;display:inline-block;margin:0 auto 18px;
+  text-shadow:0 0 14px rgba(255,179,71,.55),0 0 40px rgba(255,120,40,.25);animation:flick 5s infinite}
+@keyframes flick{0%,95%,100%{opacity:1}96%{opacity:.55}97%{opacity:1}98.5%{opacity:.7}}
+.tagline{color:var(--dim);font-size:12px;letter-spacing:.32em;margin-bottom:40px}
+.tagline [lang]{font-family:'Noto Sans SC','PingFang SC','Hiragino Sans GB','Noto Sans CJK SC','Microsoft YaHei',sans-serif;font-weight:900;letter-spacing:.2em;color:var(--fg)}
+.menu{list-style:none;display:inline-flex;flex-direction:column;gap:4px;text-align:left;margin-bottom:36px}
+.menu button{font-size:clamp(17px,2.4vw,21px);letter-spacing:.14em;color:var(--dim);padding:6px 10px;white-space:pre;transition:color .15s}
+.menu button::before{content:"  ";color:var(--amber)}
+.menu button.sel{color:var(--fg);text-shadow:0 0 12px rgba(236,231,218,.35)}
+.menu button.sel::before{content:"> ";animation:blink .9s steps(1) infinite}
+#playView{margin-bottom:24px}
+#game{font-family:var(--mono);font-size:14px;line-height:16px;color:var(--fg);border-top:1px dashed var(--line);border-bottom:1px dashed var(--line);
+  padding:12px 0;white-space:pre;overflow:hidden;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;text-align:left}
+#game.hit{animation:hit .12s steps(1) 4}
+@keyframes hit{50%{color:var(--amber);background:var(--amber-soft)}}
+.boot-foot{display:flex;justify-content:space-between;gap:12px;margin-top:10px;font-size:12px;flex-wrap:wrap}
+.play-actions{display:flex;justify-content:center;gap:22px;margin-top:18px;font-size:12px}
+.play-actions button{color:var(--dim)}.play-actions button:hover{color:var(--amber)}
+.bstat{display:flex;justify-content:space-between;gap:12px;font-size:12px;color:var(--dim);border-top:1px dashed var(--line);padding-top:12px;flex-wrap:wrap}
+.press{color:var(--amber);animation:blink 1.1s steps(1) infinite;letter-spacing:.12em}
+@media(min-width:720px){.bstat,.boot-foot,.play-actions{font-size:13px}}
+
+
+#wipe{position:fixed;inset:0;width:100%;height:100%;z-index:2000;pointer-events:none}
+
+/* ---------- wallpaper ---------- */
+#wall{position:fixed;inset:0;overflow:hidden;z-index:0}
+#wall pre{position:absolute;top:0;left:0;margin:0;font-family:var(--mono);font-size:12px;line-height:14px;white-space:pre;pointer-events:none;user-select:none;-webkit-user-select:none}
+#bg{color:#3e3a33}
+#mid{color:#b07a33}
+#fg{color:var(--amber);font-weight:700;text-shadow:0 0 12px rgba(255,179,71,.45)}
+@media(max-width:719px){#wall pre{font-size:10px;line-height:12px}}
+
+/* ---------- menu bar ---------- */
+.menubar{position:fixed;top:0;left:0;right:0;height:28px;z-index:900;display:flex;justify-content:space-between;align-items:center;padding:0 10px;
+  background:rgba(22,22,22,.55);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);
+  border-bottom:1px solid rgba(255,255,255,.06);font-size:13px;color:#ececec;user-select:none}
+.mb-l,.mb-r{display:flex;align-items:center;gap:1px;min-width:0}
+.menubar button,.mb-brand{padding:2px 9px;border-radius:5px;white-space:nowrap}
+.menubar button:hover,.menubar button:focus-visible{background:rgba(255,255,255,.14);outline:none}
+.mb-brand{font-weight:700;display:flex;align-items:center;gap:7px}
+.mb-logo{font-family:var(--mono);font-weight:800;color:var(--amber);font-size:12px}
+.mb-clock{padding:2px 6px;font-variant-numeric:tabular-nums}
+#langBtn{font-family:var(--cjk);font-weight:900;font-size:12px}
+@media(max-width:719px){.mb-menu{display:none}}
+
+/* ---------- desktop + icons ---------- */
+.desktop{position:fixed;inset:28px 0 0 0;z-index:10;touch-action:none;cursor:grab}
+.desktop.spinning{cursor:grabbing}
+.icon{position:absolute;width:96px;display:flex;flex-direction:column;align-items:center;gap:5px;padding:6px 4px;border-radius:8px;
+  font:500 12px/1.25 var(--ui);color:#fff;text-align:center;text-shadow:0 1px 3px rgba(0,0,0,.85);touch-action:none;cursor:default;
+  transition:transform .15s ease}
+.icon svg{width:64px;height:56px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.5));transition:filter .15s}
+.icon .lbl{padding:1px 6px;border-radius:4px}
+.icon:hover svg{filter:drop-shadow(0 6px 10px rgba(0,0,0,.5)) brightness(1.08)}
+.icon.sel svg{filter:drop-shadow(0 6px 10px rgba(0,0,0,.5)) brightness(.78)}
+.icon.sel .lbl{background:var(--sel)}
+.icon:focus-visible{outline:none}
+.icon:focus-visible .lbl{box-shadow:0 0 0 2px var(--sel)}
+.icon.dragging{transition:none;opacity:.85;z-index:5}
+.hint{position:fixed;left:50%;bottom:94px;transform:translateX(-50%);z-index:5;font:12px var(--mono);color:var(--dim);pointer-events:none;white-space:nowrap;
+  transition:opacity .6s}
+.hint.gone{opacity:0}
+@media(max-width:719px){
+  .icons{position:absolute;left:0;right:0;bottom:calc(20px + env(safe-area-inset-bottom));display:grid;grid-template-columns:repeat(4,1fr);gap:14px 0;padding:0 8px}
+  .icon{position:static;width:auto}
+  .icon svg{width:58px;height:50px}
+  .hint{top:calc(28px + 52vh);bottom:auto}
+}
+
+/* ---------- windows ---------- */
+.win{position:fixed;z-index:100;left:80px;top:60px;width:min(720px,92vw);height:min(520px,76vh);display:flex;flex-direction:column;
+  background:var(--win);color:var(--win-text);border:1px solid var(--win-border);border-radius:12px;overflow:hidden;font-family:var(--ui);
+  box-shadow:0 30px 80px -12px rgba(0,0,0,.75),0 0 0 .5px rgba(0,0,0,.7);
+  backdrop-filter:blur(30px) saturate(1.5);-webkit-backdrop-filter:blur(30px) saturate(1.5)}
+.js .win:not(.open){display:none}
+.win:focus{outline:none}
+.win-bar{height:40px;flex:none;display:flex;align-items:center;position:relative;padding:0 13px;border-bottom:1px solid var(--hair);
+  background:rgba(255,255,255,.035);touch-action:none;user-select:none;cursor:default}
+.lights{display:flex;gap:8px;position:relative;z-index:1}
+.lights button{width:12px;height:12px;border-radius:50%;padding:0;display:grid;place-items:center;font:700 9px/1 var(--ui);color:transparent}
+.l-close{background:#ff5f57}.l-min{background:#febc2e}.l-max{background:#28c840}
+.lights:hover button,.lights button:focus-visible{color:rgba(0,0,0,.6)}
+.win:not(.active) .lights button{background:#4b4b50}
+.win-title{position:absolute;left:0;right:0;display:flex;justify-content:center;align-items:center;gap:7px;font-size:13px;font-weight:600;color:#d2d2d6;pointer-events:none}
+.win:not(.active) .win-title{color:#88888f}
+.win-title svg{width:17px;height:15px}
+.win-body{flex:1;overflow:auto;min-height:0;overscroll-behavior:contain}
+.win.max{left:8px!important;top:36px!important;width:calc(100vw - 16px)!important;height:calc(100vh - 124px)!important}
+@media(max-width:719px){
+  .win{left:0!important;top:28px!important;width:100vw!important;height:calc(100% - 28px)!important;border-radius:0;border:0}
+  .win-bar{height:46px}
+  .lights button{width:15px;height:15px}
+}
+
+/* finder (work) */
+.finder{display:grid;grid-template-columns:176px 1fr;height:100%}
+.side{background:rgba(255,255,255,.025);border-right:1px solid var(--hair);padding:10px 8px;font-size:13px;overflow:auto}
+.side h4{font-size:11px;color:var(--win-dim);font-weight:600;margin:10px 8px 4px}
+.side h4:first-child{margin-top:2px}
+.side button{display:flex;gap:8px;align-items:center;width:100%;padding:4px 8px;border-radius:6px;color:var(--win-text)}
+.side button:hover{background:rgba(255,255,255,.06)}
+.side button.on{background:rgba(255,255,255,.12)}
+.side svg{width:17px;height:15px;flex:none}
+.pane{display:flex;flex-direction:column;min-width:0;min-height:0}
+.toolbar{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--hair);font-size:13px;flex:none}
+.back{width:28px;height:24px;border-radius:6px;color:var(--win-text);display:grid;place-items:center;font-size:15px}
+.back:hover:not(:disabled){background:rgba(255,255,255,.08)}
+.back:disabled{opacity:.3;cursor:default}
+.crumbs{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.crumbs span{color:var(--win-dim);font-weight:500}
+.pane-body{flex:1;overflow:auto;min-height:0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:16px 6px;padding:20px 16px}
+.item{display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 4px;border-radius:9px;font-size:12px;text-align:center}
+.item svg{width:66px;height:58px;filter:drop-shadow(0 4px 8px rgba(0,0,0,.35))}
+.item:hover,.item:focus-visible{background:rgba(255,255,255,.07);outline:none}
+.item small{color:var(--win-dim);font-size:11px}
+.status-bar{flex:none;font-size:11px;color:var(--win-dim);text-align:center;padding:5px;border-top:1px solid var(--hair)}
+@media(max-width:719px){.finder{grid-template-columns:1fr}.side{display:none}}
+
+/* project + document content */
+.doc{padding:22px 26px 30px;font-size:14.5px;line-height:1.6}
+.doc h2{font-size:22px;font-weight:700;letter-spacing:-.02em;margin-bottom:4px}
+.doc h2 small{font-size:13px;font-weight:500;color:var(--win-dim);margin-left:8px}
+.doc p{color:#d4d4da;margin:12px 0;max-width:62ch}
+.doc .muted{color:var(--win-dim)}
+.badge{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--win-dim)}
+.badge i{width:7px;height:7px;border-radius:50%;background:var(--win-dim)}
+.badge i.live{background:#30d158;box-shadow:0 0 8px #30d158}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:14px}
+.tags span{font-size:11.5px;padding:3px 9px;border-radius:999px;background:rgba(255,255,255,.07);color:#cfcfd6}
+.links{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
+.links a,.btn{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:500;padding:6px 12px;border-radius:7px;background:rgba(255,255,255,.08);transition:background .15s}
+.links a:hover,.btn:hover{background:rgba(255,255,255,.15)}
+.links a.primary{background:var(--sel)}
+.links a.primary:hover{background:#4a8ff8}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;margin-top:16px;font-size:13px}
+.kv dt{color:var(--win-dim)}
+.art{font-family:var(--mono);font-size:11.5px;line-height:1.35;color:#b8b2a4;white-space:pre;overflow-x:auto;background:rgba(0,0,0,.35);border:1px solid var(--hair);
+  border-radius:8px;padding:14px;margin-top:18px}
+.art b{color:var(--amber);font-weight:500}
+.split{display:grid;gap:8px 28px}
+@media(min-width:900px){.split{grid-template-columns:1.15fr 1fr;align-items:start}.split .art{margin-top:12px}}
+
+/* youtube player */
+.player{background:#000;aspect-ratio:16/8;display:grid;place-items:center;position:relative;border-bottom:1px solid var(--hair)}
+.player pre{font-family:var(--mono);font-size:12px;line-height:1.2;color:var(--amber);text-shadow:0 0 12px rgba(255,179,71,.4)}
+.player .bar{position:absolute;left:14px;right:14px;bottom:12px;height:4px;border-radius:2px;background:rgba(255,255,255,.18);overflow:hidden}
+.player .bar i{display:block;height:100%;width:30%;background:#ff3b30;animation:prog 12s linear infinite}
+@keyframes prog{from{width:2%}to{width:100%}}
+.player .tc{position:absolute;left:14px;bottom:22px;font:11px var(--mono);color:#ddd}
+
+/* contact card */
+.card{padding:26px 26px 30px;text-align:center}
+.avatar{width:84px;height:84px;border-radius:50%;margin:0 auto 12px;display:grid;place-items:center;font:800 28px var(--mono);color:#0a0a09;
+  background:radial-gradient(circle at 30% 25%,#ffd28a,#ff9b2f 60%,#d9631a)}
+.card h2{font-size:22px;font-weight:700}
+.card h2 span{font-weight:900;margin-left:6px;font-size:19px}
+.card .sub{color:var(--win-dim);font-size:13px;margin-top:2px}
+.crows{margin:22px auto 0;max-width:460px;text-align:left;background:rgba(255,255,255,.04);border:1px solid var(--hair);border-radius:10px;overflow:hidden}
+.crow{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;padding:11px 14px;border-top:1px solid var(--hair);font-size:14px}
+.crow:first-child{border-top:0}
+.crow .k{color:var(--win-dim);font-size:12px}
+.crow a{color:#6aa8ff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.crow a:hover{text-decoration:underline}
+.copy{font-size:12px;padding:3px 9px;border-radius:6px;background:rgba(255,255,255,.08)}
+.copy:hover{background:rgba(255,255,255,.15)}
+
+/* readme + terminal */
+.txt{font-family:var(--mono);font-size:13px;line-height:1.65;padding:18px 20px;white-space:pre-wrap;color:#dcd7ca}
+.term{background:rgba(8,8,8,.92);height:100%;font-family:var(--mono);font-size:13px;line-height:1.55;padding:12px 14px;color:#d9d4c7;overflow:auto;cursor:text}
+.term .p{color:var(--amber)}
+.term .err{color:#ff6b62}
+.term .ok{color:#30d158}
+.term-line{display:flex;gap:8px}
+.term input{flex:1;min-width:0;background:transparent;border:0;outline:0;color:inherit;font:inherit;caret-color:var(--amber)}
+
+/* ---------- dock ---------- */
+.dock{position:fixed;left:50%;bottom:10px;transform:translateX(-50%);z-index:800;display:flex;align-items:flex-end;gap:4px;padding:6px 8px;
+  border-radius:20px;background:rgba(42,42,46,.42);border:1px solid rgba(255,255,255,.13);
+  backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6)}
+.dock button{width:52px;height:52px;position:relative;flex:none;transition:width .12s ease,height .12s ease;display:grid;place-items:end center}
+.dock svg{width:100%;height:100%;filter:drop-shadow(0 4px 6px rgba(0,0,0,.4))}
+.dock .dot{position:absolute;bottom:-5px;left:50%;width:4px;height:4px;border-radius:50%;background:#e5e5e5;transform:translateX(-50%);opacity:0;transition:opacity .2s}
+.dock button.running .dot{opacity:1}
+.dock .tip{position:absolute;bottom:calc(100% + 14px);left:50%;transform:translateX(-50%);background:rgba(36,36,38,.92);border:1px solid var(--hair);
+  color:#eee;padding:3px 10px;border-radius:7px;font-size:12px;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .12s}
+.dock button:hover .tip,.dock button:focus-visible .tip{opacity:1}
+.dock button:focus-visible{outline:none}
+.dock .sep{width:1px;height:44px;background:rgba(255,255,255,.2);margin:0 5px 4px;flex:none}
+.dock button.bounce{animation:bounce .5s ease 2}
+@keyframes bounce{40%{transform:translateY(-14px)}}
+@media(max-width:719px){.dock{display:none}}
+
+/* ---------- no-JS fallback: content readable as a normal page ---------- */
+html:not(.js) #wall,html:not(.js) .dock,html:not(.js) .menubar,html:not(.js) #boot,html:not(.js) .icons,html:not(.js) .hint{display:none}
+html:not(.js) .desktop{position:static;padding:24px}
+html:not(.js) .win{position:static;width:auto;height:auto;margin:16px;display:block}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <linearGradient id="fBack" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4aa6f5"/><stop offset="1" stop-color="#2a78d6"/></linearGradient>
+    <linearGradient id="fFront" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8ccdfd"/><stop offset=".12" stop-color="#6ab9fa"/><stop offset="1" stop-color="#3b8eea"/></linearGradient>
+    <linearGradient id="tBg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a3a3e"/><stop offset="1" stop-color="#151517"/></linearGradient>
+  </defs>
+  <symbol id="i-folder" viewBox="0 0 64 56">
+    <path d="M3 9.5A4.5 4.5 0 0 1 7.5 5h15.2c1.2 0 2.3.5 3.2 1.3L29.5 10h27A4.5 4.5 0 0 1 61 14.5V47a4.5 4.5 0 0 1-4.5 4.5h-49A4.5 4.5 0 0 1 3 47z" fill="url(#fBack)"/>
+    <path d="M3 18.5A4.5 4.5 0 0 1 7.5 14h49a4.5 4.5 0 0 1 4.5 4.5V47a4.5 4.5 0 0 1-4.5 4.5h-49A4.5 4.5 0 0 1 3 47z" fill="url(#fFront)"/>
+    <path d="M7.5 14.6h49" stroke="rgba(255,255,255,.55)" stroke-width="1"/>
+  </symbol>
+  <symbol id="i-file" viewBox="0 0 64 56">
+    <path d="M17 3h22l11 11v38a2 2 0 0 1-2 2H17a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" fill="#f4f4f2"/>
+    <path d="M39 3v9a2 2 0 0 0 2 2h9z" fill="#d5d5d2"/>
+    <path d="M21 22h23M21 28h23M21 34h23M21 40h15" stroke="#b9b9b4" stroke-width="2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="i-term" viewBox="0 0 64 56">
+    <rect x="5" y="1" width="54" height="54" rx="12" fill="url(#tBg)"/>
+    <rect x="5.5" y="1.5" width="53" height="53" rx="11.5" fill="none" stroke="rgba(255,255,255,.18)"/>
+    <path d="M17 19l9 8-9 8" stroke="#ffb347" stroke-width="3.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M30 37h16" stroke="#ffb347" stroke-width="3.2" stroke-linecap="round"/>
+  </symbol>
+  <symbol id="e-work" viewBox="0 0 64 56"><use href="#i-folder"/><path d="M26 28l-5 5 5 5M38 28l5 5-5 5M34 26l-4 14" stroke="rgba(10,60,130,.45)" stroke-width="2.6" fill="none" stroke-linecap="round" stroke-linejoin="round"/></symbol>
+  <symbol id="e-yt" viewBox="0 0 64 56"><use href="#i-folder"/><path d="M28 26.5v13l11-6.5z" fill="rgba(10,60,130,.45)"/></symbol>
+  <symbol id="e-about" viewBox="0 0 64 56"><use href="#i-folder"/><circle cx="32" cy="28" r="2.4" fill="rgba(10,60,130,.45)"/><path d="M32 33v8" stroke="rgba(10,60,130,.45)" stroke-width="3" stroke-linecap="round"/></symbol>
+  <symbol id="e-contact" viewBox="0 0 64 56"><use href="#i-folder"/><path d="M22 28h20v13H22z" fill="none" stroke="rgba(10,60,130,.45)" stroke-width="2.4" stroke-linejoin="round"/><path d="M22 29l10 7 10-7" fill="none" stroke="rgba(10,60,130,.45)" stroke-width="2.4" stroke-linejoin="round"/></symbol>
+</svg>
+
+<div id="boot" role="dialog" aria-label="carlgao.com start screen">
+  <pre id="stars" aria-hidden="true"></pre>
+  <div class="boot-in">
+    <pre id="logo" aria-hidden="true"></pre>
+    <p class="tagline">BUILDER / FOUNDER / <span lang="zh-Hans">高世钦</span></p>
+    <div id="titleView">
+      <ul class="menu" aria-label="Start menu">
+        <li><button type="button" data-act="start">START</button></li>
+        <li><button type="button" data-act="play">PLAY RUNNER</button></li>
+        <li><button type="button" data-act="skip">SKIP INTRO</button></li>
+      </ul>
+    </div>
+    <div id="playView" hidden>
+      <pre id="game" aria-hidden="true"></pre>
+      <div class="boot-foot"><span class="dim" id="hint">SPACE / TAP TO JUMP</span><span id="score">SCORE 000000</span></div>
+      <div class="play-actions"><button type="button" data-act="menu">[ESC] MENU</button><button type="button" data-act="start">[ENTER] START</button></div>
+    </div>
+    <div class="bstat"><span id="bar">LOADING</span><span id="best">HI 000000</span></div>
+    <div class="bstat" style="border:0;padding-top:6px"><span class="press" id="press">PLEASE WAIT</span><span>&copy; 2026 CARL GAO</span></div>
+  </div>
+</div>
+
+<div id="wall" aria-hidden="true"><pre id="bg"></pre><pre id="mid"></pre><pre id="fg"></pre></div>
+
+<header class="menubar">
+  <div class="mb-l">
+    <span class="mb-brand"><span class="mb-logo">cg</span>carlgao.com</span>
+    <span class="mb-menu">
+      <button type="button" data-open="work">Work</button>
+      <button type="button" data-open="youtube">YouTube</button>
+      <button type="button" data-open="about">About</button>
+      <button type="button" data-open="contact">Contact</button>
+    </span>
+  </div>
+  <div class="mb-r">
+    <button type="button" id="langBtn" aria-label="Switch the 3D name between English and Chinese">中</button>
+    <span class="mb-clock" id="clock"></span>
+  </div>
+</header>
+
+<main class="desktop" id="desktop">
+  <h1 class="sr">Carl Gao (<span lang="zh-Hans">高世钦</span>). Builder and founder.</h1>
+  <div class="icons" id="icons">
+    <button type="button" class="icon" data-open="work"><svg aria-hidden="true"><use href="#e-work"/></svg><span class="lbl">Work</span></button>
+    <button type="button" class="icon" data-open="youtube"><svg aria-hidden="true"><use href="#e-yt"/></svg><span class="lbl">YouTube</span></button>
+    <button type="button" class="icon" data-open="about"><svg aria-hidden="true"><use href="#e-about"/></svg><span class="lbl">About</span></button>
+    <button type="button" class="icon" data-open="contact"><svg aria-hidden="true"><use href="#e-contact"/></svg><span class="lbl">Contact</span></button>
+    <button type="button" class="icon" data-open="readme"><svg aria-hidden="true"><use href="#i-file"/></svg><span class="lbl">README.txt</span></button>
+    <button type="button" class="icon" data-open="terminal"><svg aria-hidden="true"><use href="#i-term"/></svg><span class="lbl">Terminal</span></button>
+  </div>
+</main>
+<p class="hint" id="hint">drag the name to spin it / click a folder</p>
+
+<!-- ======================= windows ======================= -->
+
+<section class="win" id="win-work" role="dialog" aria-labelledby="wt-work" tabindex="-1" data-w="760" data-h="540">
+  <div class="win-bar">
+    <div class="lights"><button class="l-close" aria-label="Close">&times;</button><button class="l-min" aria-label="Minimize">&minus;</button><button class="l-max" aria-label="Zoom">+</button></div>
+    <div class="win-title" id="wt-work"><svg aria-hidden="true"><use href="#i-folder"/></svg>Work</div>
+  </div>
+  <div class="win-body finder">
+    <aside class="side" aria-label="Sidebar">
+      <h4>Favorites</h4>
+      <button type="button" data-open="work" class="on"><svg aria-hidden="true"><use href="#i-folder"/></svg>Work</button>
+      <button type="button" data-open="youtube"><svg aria-hidden="true"><use href="#i-folder"/></svg>YouTube</button>
+      <button type="button" data-open="about"><svg aria-hidden="true"><use href="#i-folder"/></svg>About</button>
+      <button type="button" data-open="contact"><svg aria-hidden="true"><use href="#i-folder"/></svg>Contact</button>
+      <h4>Projects</h4>
+      <button type="button" data-proj="tai"><svg aria-hidden="true"><use href="#i-folder"/></svg>tai</button>
+      <button type="button" data-proj="vaultbix"><svg aria-hidden="true"><use href="#i-folder"/></svg>vaultbix</button>
+      <button type="button" data-proj="berkeley"><svg aria-hidden="true"><use href="#i-folder"/></svg>berkeley-cs</button>
+    </aside>
+    <div class="pane">
+      <div class="toolbar">
+        <button type="button" class="back" id="workBack" aria-label="Back" disabled>&#8249;</button>
+        <div class="crumbs" id="workCrumbs">Work</div>
+      </div>
+      <div class="pane-body">
+        <div class="grid" id="workGrid">
+          <button type="button" class="item" data-proj="tai"><svg aria-hidden="true"><use href="#i-folder"/></svg>tai<small>in development</small></button>
+          <button type="button" class="item" data-proj="vaultbix"><svg aria-hidden="true"><use href="#i-folder"/></svg>vaultbix<small>archived</small></button>
+          <button type="button" class="item" data-proj="berkeley"><svg aria-hidden="true"><use href="#i-folder"/></svg>berkeley-cs<small>summer 2026</small></button>
+        </div>
+
+        <article class="doc proj" data-proj="tai" hidden>
+          <div class="split">
+            <div>
+              <h2>tai <small>2026</small></h2>
+              <span class="badge"><i class="live"></i>in development</span>
+              <p>An anti-doomscroll app for people who have a real reason to be on their phone. Before you open a distracting app, tai asks what you're there for. Junk answers don't count.</p>
+              <p class="muted">The goal is a phone that's net positive: blocking, daily goals, and a focus dashboard that feels more like a game HUD than a settings page.</p>
+              <dl class="kv"><dt>role</dt><dd>founder, design + build</dd><dt>status</dt><dd>in development</dd><dt>site</dt><dd>gettai.app (soon)</dd></dl>
+            </div>
+<pre class="art">  open instagram
+        |
+        v
+  +-------------------------+
+  | <b>what are you here for?</b>  |
+  | &gt; post today's reel_    |
+  +-------------------------+
+        |            |
+   [ go, 10m ]   [ close ]</pre>
+          </div>
+        </article>
+
+        <article class="doc proj" data-proj="vaultbix" hidden>
+          <div class="split">
+            <div>
+              <h2>VaultBix <small>2026</small></h2>
+              <span class="badge"><i></i>archived</span>
+              <p>Co-founded a developer-security startup that stopped API keys, passwords, and secrets from leaking into AI tools.</p>
+              <p>Shipped two products: a CLI that wraps Claude Code in a PTY to catch secrets in real time, published on npm, and an open-source Chrome extension with 33 detection patterns that runs 100% locally.</p>
+              <p class="muted">What I learned: we built for the browser, but engineers live in the terminal. Pick the surface your users already use.</p>
+              <dl class="kv"><dt>npm</dt><dd><span id="npmdl">378</span> downloads of vaultbix-cli in the last 12 months</dd></dl>
+              <div class="tags"><span>Next.js</span><span>Tailwind</span><span>shadcn/ui</span><span>Node</span><span>Chrome MV3</span><span>Vercel</span></div>
+              <div class="links">
+                <a class="primary" href="https://www.npmjs.com/package/vaultbix-cli" target="_blank" rel="noopener">npm: vaultbix-cli &#8599;</a>
+                <a href="https://vaultbix.com" target="_blank" rel="noopener">vaultbix.com &#8599;</a>
+                <a href="https://github.com/carlgaopapi-png/vaultbix-cli" target="_blank" rel="noopener">CLI repo &#8599;</a>
+                <a href="https://github.com/carlgaopapi-png/vaultbix-extension" target="_blank" rel="noopener">Extension repo &#8599;</a>
+              </div>
+            </div>
+<pre class="art">  $ npm i -g vaultbix-cli
+  $ vaultbix claude
+  &gt; deploy with key sk-live-4f9a...
+                    <b>^^^^^^^^^^^^^^</b>
+  <b>[blocked]</b> secret detected
+            replaced with $STRIPE_KEY
+
+  you --&gt; [ vaultbix ] --x--&gt; AI
+               |
+           33 patterns
+           0 network calls</pre>
+          </div>
+        </article>
+
+        <article class="doc proj" data-proj="berkeley" hidden>
+          <div class="split">
+            <div>
+              <h2>Berkeley CS Academy <small>summer 2026</small></h2>
+              <span class="badge"><i></i>completed</span>
+              <p>UC Berkeley Pre-College Scholars, CS Academy. Seven weeks on campus in summer 2026.</p>
+              <p>Worked through Beauty and Joy of Computing in Snap!: higher-order functions, Markov chain text generators, a working 2048 clone, and recursive kaleidoscope drawings.</p>
+              <div class="tags"><span>Snap!</span><span>BJC</span><span>recursion</span><span>higher-order functions</span></div>
+            </div>
+<pre class="art">  +------+------+------+------+
+  |   2  |      |   4  |      |
+  +------+------+------+------+
+  |      |  16  |      |   2  |
+  +------+------+------+------+
+  |   8  | <b>2048</b> |  32  |      |
+  +------+------+------+------+
+  |      |   4  |      |  64  |
+  +------+------+------+------+</pre>
+          </div>
+        </article>
+      </div>
+      <div class="status-bar" id="workStatus">3 items</div>
+    </div>
+  </div>
+</section>
+
+<section class="win" id="win-youtube" role="dialog" aria-labelledby="wt-youtube" tabindex="-1" data-w="640" data-h="520">
+  <div class="win-bar">
+    <div class="lights"><button class="l-close" aria-label="Close">&times;</button><button class="l-min" aria-label="Minimize">&minus;</button><button class="l-max" aria-label="Zoom">+</button></div>
+    <div class="win-title" id="wt-youtube"><svg aria-hidden="true"><use href="#i-folder"/></svg>YouTube</div>
+  </div>
+  <div class="win-body">
+    <div class="player" aria-hidden="true">
+<pre>   |\
+   | \
+   |  &gt;
+   | /
+   |/</pre>
+      <span class="tc">00:42 / 12:07</span>
+      <div class="bar"><i></i></div>
+    </div>
+    <div class="doc">
+      <h2>My channel</h2>
+      <span class="badge"><i class="live"></i>recording</span>
+      <p>Mostly vlogs: building tai in public, what it's like running a startup, and whatever I'm working on that week.</p>
+      <p class="muted">Shot on a GoPro HERO12 and an iPhone, edited in DaVinci Resolve. Short versions go to Instagram Reels.</p>
+      <div class="links">
+        <a class="primary" href="https://www.youtube.com/@YOUR_HANDLE" target="_blank" rel="noopener">Watch on YouTube &#8599;</a>
+        <a href="https://www.instagram.com/YOUR_HANDLE" target="_blank" rel="noopener">Instagram Reels &#8599;</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="win" id="win-about" role="dialog" aria-labelledby="wt-about" tabindex="-1" data-w="600" data-h="500">
+  <div class="win-bar">
+    <div class="lights"><button class="l-close" aria-label="Close">&times;</button><button class="l-min" aria-label="Minimize">&minus;</button><button class="l-max" aria-label="Zoom">+</button></div>
+    <div class="win-title" id="wt-about"><svg aria-hidden="true"><use href="#i-folder"/></svg>About</div>
+  </div>
+  <div class="win-body doc">
+    <h2>Carl Gao <small lang="zh-Hans">高世钦</small></h2>
+    <p>I'm Carl. I like building things and putting them in front of people fast.</p>
+    <p>I co-founded VaultBix, shipped a Chrome extension and a CLI to npm, then wound it down. It taught me more than anything that worked would have.</p>
+    <p>Now I'm building tai because I need it myself. I care a lot about frontend taste, and I'm starting a YouTube channel to show the process.</p>
+    <dl class="kv">
+      <dt>based in</dt><dd>Massachusetts</dd>
+      <dt>building</dt><dd>tai</dd>
+      <dt>stack</dt><dd>TypeScript, React, Next.js, Python</dd>
+      <dt>off-screen</dt><dd>hockey, vlogs</dd>
+    </dl>
+  </div>
+</section>
+
+<section class="win" id="win-contact" role="dialog" aria-labelledby="wt-contact" tabindex="-1" data-w="560" data-h="560">
+  <div class="win-bar">
+    <div class="lights"><button class="l-close" aria-label="Close">&times;</button><button class="l-min" aria-label="Minimize">&minus;</button><button class="l-max" aria-label="Zoom">+</button></div>
+    <div class="win-title" id="wt-contact"><svg aria-hidden="true"><use href="#i-folder"/></svg>Contact</div>
+  </div>
+  <div class="win-body card">
+    <div class="avatar" aria-hidden="true">cg</div>
+    <h2>Carl Gao<span lang="zh-Hans">高世钦</span></h2>
+    <p class="sub">Builder and founder. Fastest reply is email.</p>
+    <div class="crows">
+      <div class="crow"><span class="k">email</span><a href="mailto:iamcarlgao@gmail.com">iamcarlgao@gmail.com</a><button type="button" class="copy" data-copy="iamcarlgao@gmail.com">Copy</button></div>
+      <div class="crow"><span class="k">call</span><a href="https://cal.com/carl-gao-czmatk/15min" target="_blank" rel="noopener">Book 15 minutes</a><span></span></div>
+      <div class="crow"><span class="k">youtube</span><a href="https://www.youtube.com/@YOUR_HANDLE" target="_blank" rel="noopener">@YOUR_HANDLE</a><span></span></div>
+      <div class="crow"><span class="k">instagram</span><a href="https://www.instagram.com/YOUR_HANDLE" target="_blank" rel="noopener">@YOUR_HANDLE</a><span></span></div>
+      <div class="crow"><span class="k">linkedin</span><a href="https://www.linkedin.com/in/YOUR_HANDLE" target="_blank" rel="noopener">in/YOUR_HANDLE</a><span></span></div>
+      <div class="crow"><span class="k">github</span><a href="https://github.com/carlgaopapi-png" target="_blank" rel="noopener">carlgaopapi-png</a><span></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="win" id="win-readme" role="dialog" aria-labelledby="wt-readme" tabindex="-1" data-w="400" data-h="330">
+  <div class="win-bar">
+    <div class="lights"><button class="l-close" aria-label="Close">&times;</button><button class="l-min" aria-label="Minimize">&minus;</button><button class="l-max" aria-label="Zoom">+</button></div>
+    <div class="win-title" id="wt-readme"><svg aria-hidden="true"><use href="#i-file"/></svg>README.txt</div>
+  </div>
+  <div class="win-body txt">hi, i'm carl (<span lang="zh-Hans">高世钦</span>).
+builder, founder, making videos about it.
+
+&gt; click a folder to look around
+&gt; drag the name to spin it
+&gt; click the background for a ripple
+&gt; the terminal takes commands
+
+currently building: <span class="amber">tai</span></div>
+</section>
+
+<section class="win" id="win-terminal" role="dialog" aria-labelledby="wt-terminal" tabindex="-1" data-w="600" data-h="380">
+  <div class="win-bar">
+    <div class="lights"><button class="l-close" aria-label="Close">&times;</button><button class="l-min" aria-label="Minimize">&minus;</button><button class="l-max" aria-label="Zoom">+</button></div>
+    <div class="win-title" id="wt-terminal"><svg aria-hidden="true"><use href="#i-term"/></svg>carl@gao: ~</div>
+  </div>
+  <div class="win-body term" id="term">
+    <div id="termOut"></div>
+    <div class="term-line"><span class="p">carl@gao ~ %</span><input id="termIn" aria-label="Terminal command" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+  </div>
+</section>
+
+<nav class="dock" id="dock" aria-label="Dock">
+  <button type="button" data-open="work"><svg aria-hidden="true"><use href="#e-work"/></svg><span class="tip">Work</span><span class="dot"></span></button>
+  <button type="button" data-open="youtube"><svg aria-hidden="true"><use href="#e-yt"/></svg><span class="tip">YouTube</span><span class="dot"></span></button>
+  <button type="button" data-open="about"><svg aria-hidden="true"><use href="#e-about"/></svg><span class="tip">About</span><span class="dot"></span></button>
+  <button type="button" data-open="contact"><svg aria-hidden="true"><use href="#e-contact"/></svg><span class="tip">Contact</span><span class="dot"></span></button>
+  <span class="sep" aria-hidden="true"></span>
+  <button type="button" data-open="readme"><svg aria-hidden="true"><use href="#i-file"/></svg><span class="tip">README.txt</span><span class="dot"></span></button>
+  <button type="button" data-open="terminal"><svg aria-hidden="true"><use href="#i-term"/></svg><span class="tip">Terminal</span><span class="dot"></span></button>
+</nav>
+
+<script>
+(function(){
+  "use strict";
+  var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var GLYPHS = "!<>-_\\/[]{}=+*^?#%&$01";
+  function rnd(s){ return s[(Math.random() * s.length) | 0]; }
+  function $(id){ return document.getElementById(id); }
+  var isPhone = function(){ return window.matchMedia("(max-width:719px)").matches; };
+
+  /* ---------- start screen: arcade title, menu, starfield, mini runner (once per session, ?intro forces it) ---------- */
+  (function intro(){
+    var boot = document.getElementById("boot");
+    var seen = false;
+    try { seen = sessionStorage.getItem("booted") === "1"; } catch(e){}
+    var force = /[?&]intro\b/.test(location.search);
+    if ((reduce || seen) && !force) { boot.classList.add("gone"); window.__introDone = true; return; }
+    try { sessionStorage.setItem("booted", "1"); } catch(e){}
+
+    function $(id){ return document.getElementById(id); }
+    var root = document.documentElement;
+    root.style.overflow = "hidden";
+    var starsEl = $("stars"), logoEl = $("logo"), barEl = $("bar"), pressEl = $("press");
+    var titleView = $("titleView"), playView = $("playView");
+    var game = $("game"), hint = $("hint"), scoreEl = $("score"), bestEl = $("best");
+    var items = Array.prototype.slice.call(boot.querySelectorAll(".menu button")), sel = 0;
+    var view = "title", leaving = false, closed = false, ready = false, pending = false;
+    var lastInput = performance.now(), lastAct = 0, warp = 0;
+
+    /* ---- loading progress: min 1.8s, waits for fonts + window load, never hangs past 6s ---- */
+    var loaded = document.readyState === "complete", fontsOk = false, t0 = performance.now(), shown = 0;
+    window.addEventListener("load", function(){ loaded = true; });
+    (document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve()).then(function(){ fontsOk = true; });
+    setTimeout(function(){ loaded = true; fontsOk = true; }, 6000);
+    function updateBar(now){
+      var timeP = Math.min(1, (now - t0) / 1800);
+      var target = (loaded && fontsOk) ? timeP : Math.min(timeP, 0.9);
+      shown += (target - shown) * 0.14;
+      if (target === 1 && shown > 0.995) shown = 1;
+      var W = 20, n = Math.round(shown * W);
+      barEl.textContent = shown < 1
+        ? "LOADING [" + "#".repeat(n) + ".".repeat(W - n) + "] " + ("  " + Math.round(shown * 100)).slice(-3) + "%"
+        : "SYSTEM READY";
+      if (shown === 1 && !ready) { ready = true; if (pending) start(); }
+    }
+
+    /* ---- big block logo, drawn from a tiny canvas like the hero ---- */
+    var logoRows = [], logoGlitch = { row: -1, off: 0, until: 0 }, nextLogoGlitch = 0, logoBorn = performance.now();
+    function buildLogo(){
+      var box = boot.querySelector(".boot-in").clientWidth || 600;
+      var narrow = box < 520, lines = narrow ? ["CARL", "GAO"] : ["CARL GAO"];
+      var lc = narrow ? 34 : 64;
+      var fsPx = Math.min(14, box / (lc * 0.6));
+      logoEl.style.fontSize = fsPx + "px";
+      var ar = 0.6;                                   // cell is 0.6 wide for every 1 tall
+      var c = document.createElement("canvas"), x = c.getContext("2d", { willReadFrequently: true });
+      x.font = "800 100px 'JetBrains Mono', monospace";
+      var maxW = 0; lines.forEach(function(l){ maxW = Math.max(maxW, x.measureText(l).width); });
+      var fs = 100 * (lc * 0.96) / maxW;
+      var lr = Math.ceil(fs * ar * 0.82 * lines.length) + 1;
+      c.width = lc; c.height = lr;
+      x.setTransform(1, 0, 0, ar, 0, 0);
+      x.font = "800 " + fs + "px 'JetBrains Mono', monospace";
+      x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = "#fff";
+      var H = lr / ar;
+      lines.forEach(function(l, i){ x.fillText(l, lc / 2, H / 2 + (i - (lines.length - 1) / 2) * fs * 0.86); });
+      var d = x.getImageData(0, 0, lc, lr).data;
+      logoRows = [];
+      for (var yy = 0; yy < lr; yy++) {
+        var s = "";
+        for (var xx = 0; xx < lc; xx++) {
+          var a = d[(yy * lc + xx) * 4 + 3] / 255;
+          s += a > 0.55 ? "\u2588" : a > 0.3 ? "\u2593" : a > 0.12 ? "\u2591" : " ";
+        }
+        logoRows.push(s.replace(/\s+$/, ""));
+      }
+      while (logoRows.length && !logoRows[0].trim()) logoRows.shift();
+      while (logoRows.length && !logoRows[logoRows.length - 1].trim()) logoRows.pop();
+    }
+    function drawLogo(now){
+      var revealed = Math.min(logoRows.length, Math.floor((now - logoBorn) / 70));
+      if (now > nextLogoGlitch) {
+        logoGlitch = { row: (Math.random() * logoRows.length) | 0, off: (Math.random() < 0.5 ? -1 : 1) * (1 + ((Math.random() * 3) | 0)), until: now + 110 };
+        nextLogoGlitch = now + 1600 + Math.random() * 2600;
+      }
+      var out = [];
+      for (var i = 0; i < logoRows.length; i++) {
+        var r = i < revealed ? logoRows[i] : logoRows[i].replace(/\S/g, i === revealed ? "\u2591" : " ");
+        if (i === logoGlitch.row && now < logoGlitch.until) r = logoGlitch.off > 0 ? " ".repeat(logoGlitch.off) + r : r.slice(-logoGlitch.off);
+        out.push(r);
+      }
+      logoEl.textContent = out.join("\n");
+    }
+
+    /* ---- 3D starfield: points fly toward the camera, warp stretches them into streaks ---- */
+    var stars = [], sc = 80, sr = 40;
+    function fitStars(){
+      var probe = document.createElement("span"); probe.textContent = "MMMMMMMMMM";
+      starsEl.textContent = ""; starsEl.appendChild(probe);
+      var r = probe.getBoundingClientRect(); starsEl.textContent = "";
+      var scw = r.width / 10 || 7.2, sch = parseFloat(getComputedStyle(starsEl).lineHeight) || 14;
+      sc = Math.ceil(innerWidth / scw); sr = Math.ceil(innerHeight / sch);
+    }
+    function newStar(anyDepth){ return { x: Math.random() * 2 - 1, y: Math.random() * 2 - 1, z: anyDepth ? 0.05 + Math.random() : 1 }; }
+    for (var si = 0; si < 170; si++) stars.push(newStar(true));
+    function drawStars(){
+      var g = [], aspect = 0.5;
+      for (var r = 0; r < sr; r++) g.push(new Array(sc).fill(" "));
+      var speed = 0.005 + warp * 0.05;
+      stars.forEach(function(s){
+        var ox = sc / 2 + (s.x / s.z) * sc * 0.4, oy = sr / 2 + (s.y / s.z) * sr * 0.4 * aspect * 2;
+        s.z -= speed;
+        if (s.z <= 0.03) { var n = newStar(false); s.x = n.x; s.y = n.y; s.z = n.z; return; }
+        var px = sc / 2 + (s.x / s.z) * sc * 0.4, py = sr / 2 + (s.y / s.z) * sr * 0.4 * aspect * 2;
+        if (px < 0 || py < 0 || px >= sc || py >= sr) { var m = newStar(false); s.x = m.x; s.y = m.y; s.z = m.z; return; }
+        if (warp > 0.15) {                              // streak from last position to this one
+          var steps = 6;
+          for (var k = 1; k <= steps; k++) {
+            var qx = Math.round(ox + (px - ox) * k / steps), qy = Math.round(oy + (py - oy) * k / steps);
+            if (qx >= 0 && qy >= 0 && qx < sc && qy < sr) g[qy][qx] = k === steps ? "*" : (Math.abs(px - ox) > Math.abs(py - oy) * 2 ? "-" : (px - ox) * (py - oy) > 0 ? "\\" : "/");
+          }
+        } else {
+          g[py | 0][px | 0] = s.z < 0.25 ? "*" : s.z < 0.55 ? "+" : ".";
+        }
+      });
+      starsEl.textContent = g.map(function(row){ return row.join(""); }).join("\n");
+    }
+
+    /* ---- menu ---- */
+    function setSel(i){ sel = (i + items.length) % items.length; items.forEach(function(b, k){ b.classList.toggle("sel", k === sel); }); }
+    items.forEach(function(b, k){
+      b.addEventListener("mouseenter", function(){ setSel(k); });
+      b.addEventListener("click", function(){ act(b.dataset.act); });
+    });
+    boot.querySelectorAll(".play-actions button").forEach(function(b){ b.addEventListener("click", function(){ act(b.dataset.act); }); });
+    function act(a){
+      var now = performance.now();
+      if (now - lastAct < 200) return;                // keyboard Enter can also fire a click; only act once
+      lastAct = now; lastInput = now;
+      if (a === "start") start();
+      else if (a === "play") toPlay();
+      else if (a === "menu") toTitle();
+      else if (a === "skip") leave(false);
+    }
+    function start(){
+      if (!ready) { pending = true; pressEl.textContent = "STARTING WHEN LOADED..."; return; }
+      leave(true);
+    }
+    function toPlay(){ view = "play"; titleView.hidden = true; playView.hidden = false; fit(); hint.textContent = "SPACE / TAP TO JUMP"; }
+    function toTitle(){ view = "title"; playView.hidden = true; titleView.hidden = false; setSel(0); }
+
+    /* ---- mini runner ---- */
+    var cols = 48, H = 6, PX = 4;
+    var y = 0, vy = 0, GRAV = 0.13, JUMP = 1.05;
+    var speed = 0.55, obs = [], nextGap = 26, travelled = 0, score = 0, best = 0, frame = 0, clouds = [];
+    try { best = +localStorage.getItem("best") || 0; } catch(e){}
+    function pad(n){ return ("00000" + n).slice(-6); }
+    bestEl.textContent = "HI " + pad(best);
+    function fit(){
+      var probe = document.createElement("span"); probe.textContent = "MMMMMMMMMM";
+      game.textContent = ""; game.appendChild(probe);
+      var cw = probe.getBoundingClientRect().width / 10 || 8.4;
+      game.textContent = "";
+      cols = Math.max(24, Math.min(64, Math.floor(game.clientWidth / cw)));
+    }
+    for (var c = 0; c < 3; c++) clouds.push({ x: Math.random() * cols, r: (Math.random() * 2) | 0 });
+    function jump(){ if (view === "play" && y === 0) vy = JUMP; }
+    function saveBest(){ if (score > best) { best = score; bestEl.textContent = "HI " + pad(best); try { localStorage.setItem("best", best); } catch(e){} } }
+    function step(){
+      frame++;
+      vy -= GRAV; y += vy; if (y <= 0) { y = 0; vy = 0; }
+      speed = Math.min(1.15, speed + 0.0006); travelled += speed; score = Math.floor(travelled / 4);
+      obs.forEach(function(o){ o.x -= speed; });
+      obs = obs.filter(function(o){ return o.x > -3; });
+      nextGap -= speed;
+      if (nextGap <= 0) {
+        obs.push({ x: cols + 1, h: Math.random() < 0.35 ? 2 : 1, w: Math.random() < 0.3 ? 2 : 1 });
+        nextGap = 16 + Math.random() * 22 + (1.15 - speed) * 14;
+      }
+      clouds.forEach(function(cl){ cl.x -= speed * 0.15; if (cl.x < -6) { cl.x = cols + Math.random() * 10; cl.r = (Math.random() * 2) | 0; } });
+      for (var i = 0; i < obs.length; i++) {
+        var o = obs[i], ox = Math.floor(o.x);
+        if (ox <= PX + 2 && ox + o.w - 1 >= PX + 0.5 && y < o.h - 0.15) {
+          obs.splice(i, 1); saveBest();
+          travelled = 0; score = 0; speed = 0.55;
+          hint.textContent = "BONK. SCORE RESET.";
+          game.classList.remove("hit"); void game.offsetWidth; game.classList.add("hit");
+          break;
+        }
+      }
+      saveBest();
+      scoreEl.textContent = "SCORE " + pad(score);
+    }
+    function render(){
+      var g = [];
+      for (var r = 0; r <= H; r++) g.push(new Array(cols).fill(" "));
+      clouds.forEach(function(cl){
+        var cx = Math.floor(cl.x);
+        for (var k = 0; k < 4; k++) if (k !== 2 && cx + k >= 0 && cx + k < cols) g[cl.r][cx + k] = "~";
+      });
+      var off = Math.floor(travelled);
+      for (var x = 0; x < cols; x++) g[H][x] = ((x + off) % 9 === 0) ? "." : "_";
+      obs.forEach(function(o){
+        var ox = Math.floor(o.x);
+        for (var hh = 0; hh < o.h; hh++) for (var ww = 0; ww < o.w; ww++) {
+          var cx = ox + ww; if (cx >= 0 && cx < cols) g[H - 1 - hh][cx] = hh === o.h - 1 ? "#" : "|";
+        }
+      });
+      var feet = H - 1 - Math.round(y), air = y > 0.2, legs = (frame >> 2) & 1;
+      var spr = air ? ["\\o/", " | ", "/ \\"] : [" o ", "/|\\", legs ? "/ \\" : " | "];
+      for (var k2 = 0; k2 < 3; k2++) {
+        var row = feet - 2 + k2; if (row < 0 || row > H) continue;
+        for (var j = 0; j < 3; j++) if (spr[k2][j] !== " ") g[row][PX + j] = spr[k2][j];
+      }
+      game.textContent = g.map(function(rw){ return rw.join(""); }).join("\n");
+    }
+
+    /* ---- main loop ---- */
+    var last = 0;
+    function loop(now){
+      if (closed) return;
+      if (now - last >= 33) {
+        last = now;
+        updateBar(now);
+        warp += ((leaving ? 1 : 0) - warp) * 0.18;
+        drawStars(); drawLogo(now);
+        if (view === "play") { step(); render(); }
+        if (!leaving && !pending) {
+          var idle = now - lastInput;
+          if (!ready) pressEl.textContent = "PLEASE WAIT";
+          else if (view === "title" && idle > 9000) start();
+          else if (view === "title" && idle > 4000) pressEl.textContent = "PRESS ENTER  (AUTO START " + Math.ceil((9000 - idle) / 1000) + ")";
+          else pressEl.textContent = view === "title" ? "PRESS ENTER" : "ENTER TO START / ESC FOR MENU";
+        }
+      }
+      requestAnimationFrame(loop);
+    }
+    fitStars(); buildLogo(); setSel(0);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function(){ buildLogo(); });
+    addEventListener("resize", function(){ fitStars(); buildLogo(); if (view === "play") fit(); });
+    requestAnimationFrame(loop);
+
+    /* ---- leaving: warp the stars, then the glyph wipe reveals the site ---- */
+    function reveal(){
+      closed = true;
+      boot.classList.add("gone");
+      root.style.overflow = "";
+      window.__introDone = true;
+      window.dispatchEvent(new Event("intro:done"));
+    }
+    function leave(withWarp){
+      if (leaving) return;
+      leaving = true;
+      pressEl.textContent = withWarp ? "HERE WE GO" : "SKIPPING";
+      if (reduce) { reveal(); return; }
+      setTimeout(function(){ glyphWipe(reveal); }, withWarp ? 520 : 0);
+    }
+
+    /* Two-pass glyph wipe on a canvas: a band of characters sweeps down and covers
+       the start screen, then a second band sweeps down and uncovers the site. */
+    function glyphWipe(onMid){
+      var cv = document.createElement("canvas"); cv.id = "wipe"; document.body.appendChild(cv);
+      var dpr = Math.min(2, window.devicePixelRatio || 1), W = innerWidth, Hh = innerHeight;
+      cv.width = W * dpr; cv.height = Hh * dpr;
+      var g = cv.getContext("2d"); g.scale(dpr, dpr);
+      var CW = 11, CH = 16, C = Math.ceil(W / CW), R = Math.ceil(Hh / CH), N = C * R;
+      var th = new Float32Array(N);
+      for (var i = 0; i < N; i++) th[i] = ((i / C) | 0) / R * 0.8 + Math.random() * 0.2;
+      g.font = "700 13px 'JetBrains Mono', monospace"; g.textBaseline = "top";
+      var BAND = 0.16, A = 360, B = 560, t1 = performance.now(), mid = false;
+      (function f(now){
+        var e = now - t1, inA = e < A;
+        var p = inA ? (e / A) * (1 + BAND) : ((e - A) / B) * (1 + BAND);
+        if (!inA && !mid) { mid = true; onMid(); }
+        g.clearRect(0, 0, W, Hh);
+        for (var i = 0; i < N; i++) {
+          var d = p - th[i];
+          var covered = inA ? d >= BAND : d < 0;
+          var edge = d >= 0 && d < BAND;
+          if (!covered && !edge) continue;
+          var x = (i % C) * CW, y = ((i / C) | 0) * CH;
+          if (covered) { g.fillStyle = "#0a0a09"; g.fillRect(x, y, CW, CH); continue; }
+          g.fillStyle = d < BAND * 0.35 ? "#fff1d6" : "#ffb347";
+          g.fillText(rnd(GLYPHS), x + 1, y + 1);
+        }
+        if (e < A + B) requestAnimationFrame(f); else cv.remove();
+      })(t1);
+    }
+
+    /* ---- input ---- */
+    function onKey(e){
+      if (closed) { removeEventListener("keydown", onKey); return; }
+      if (leaving) return;
+      lastInput = performance.now();
+      var k = e.key;
+      if (view === "title") {
+        if (k === "ArrowDown" || k === "s") { e.preventDefault(); setSel(sel + 1); }
+        else if (k === "ArrowUp" || k === "w") { e.preventDefault(); setSel(sel - 1); }
+        else if (k === "Enter" || e.code === "Space") { e.preventDefault(); act(items[sel].dataset.act); }
+        else if (k === "Escape") leave(false);
+      } else {
+        if (e.code === "Space" || k === "ArrowUp" || k === "w") { e.preventDefault(); jump(); }
+        else if (k === "Enter") { e.preventDefault(); act("start"); }
+        else if (k === "Escape") act("menu");
+      }
+    }
+    addEventListener("keydown", onKey);
+    boot.addEventListener("pointerdown", function(e){
+      lastInput = performance.now();
+      if (view === "play" && !e.target.closest("button")) jump();
+    });
+  })();
+
+
+  /* =====================================================================
+     WALLPAPER: a 3D extruded name drawn as ASCII, over a field of
+     "gravity" dots that bend toward the cursor and ripple on click.
+     ===================================================================== */
+  var wall = $("wall"), preBg = $("bg"), preMid = $("mid"), preFg = $("fg");
+  var CJK = "'Noto Sans SC', 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', 'Microsoft YaHei', sans-serif";
+  var NAMES = [
+    { wide: ["CARL GAO"], narrow: ["CARL", "GAO"], font: "800 100px 'JetBrains Mono', monospace" },
+    { wide: ["高世钦"], narrow: ["高世钦"], font: "900 100px " + CJK }
+  ];
+  var FRONT = ".:-=+*#%@";        // lit faces
+  var SIDE = ".,:;-=+*#";          // extruded sides, drawn in a dimmer layer
+  var SP = 32;                     // char code for a space
+
+  var cols = 0, rows = 0, cw = 7.2, ch = 14, ar = 2;
+  var zb, cBg, cMid, cFg;          // z-buffer + one char-code buffer per layer
+  var shapes = [], nameIdx = 0, shape = null;
+  var scatter = 1.3, trans = null, showName = false;
+  var yaw = 0, pitch = 0, vyaw = 0, vpitch = 0;
+  var ptr = { x: -1, y: -1, nx: 0.5, ny: 0.5, active: false, last: 0 };
+  var spin = null, ripples = [], lastUser = 0;
+
+  function measure(){
+    var probe = document.createElement("span");
+    probe.textContent = "MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM";
+    preBg.textContent = ""; preBg.appendChild(probe);
+    cw = probe.getBoundingClientRect().width / 50 || 7.2;
+    ch = parseFloat(getComputedStyle(preBg).lineHeight) || 14;
+    preBg.textContent = "";
+    ar = ch / cw;
+    cols = Math.ceil(innerWidth / cw); rows = Math.ceil(innerHeight / ch);
+    var n = cols * rows;
+    zb = new Float32Array(n); cBg = new Uint16Array(n); cMid = new Uint16Array(n); cFg = new Uint16Array(n);
+    shapes = NAMES.map(buildShape);
+    shape = shapes[nameIdx];
+  }
+
+  /* Rasterize the name into a small bitmap, then turn every filled pixel into
+     3D points: one on the front face, one on the back face, and a column of
+     points along the depth for pixels on the outline (the extruded sides).
+     Each point keeps its surface normal so we can light it later. */
+  function buildShape(nm){
+    var narrow = isPhone();
+    var lines = narrow ? nm.narrow : nm.wide;
+    var worldW = cols * (narrow ? 0.86 : 0.58);              // width in character columns
+    var MW = Math.max(60, Math.min(460, Math.round(worldW * 2)));
+    var px = worldW / MW;                                    // world units per bitmap pixel
+    var c = document.createElement("canvas"), x = c.getContext("2d", { willReadFrequently: true });
+    x.font = nm.font;
+    var maxW = 0;
+    lines.forEach(function(l){ maxW = Math.max(maxW, x.measureText(l).width); });
+    var fs = 100 * MW * 0.98 / maxW, lineH = fs * 0.95;
+    var maxH = rows * ar * (narrow ? 0.34 : 0.46) / px;      // keep it clear of the icons / dock
+    if (lines.length * lineH > maxH) { fs *= maxH / (lines.length * lineH); lineH = fs * 0.95; }
+    var MH = Math.ceil(lines.length * lineH + fs * 0.25);
+    c.width = MW; c.height = MH;
+    x.font = nm.font.replace("100px", fs + "px");
+    x.textAlign = "center"; x.textBaseline = "middle"; x.fillStyle = "#fff";
+    lines.forEach(function(l, i){ x.fillText(l, MW / 2, MH / 2 + (i - (lines.length - 1) / 2) * lineH); });
+    var d = x.getImageData(0, 0, MW, MH).data, A = new Float32Array(MW * MH);
+    for (var k = 0; k < A.length; k++) A[k] = d[k * 4 + 3] / 255;
+    function a(i, j){ return (i < 0 || j < 0 || i >= MW || j >= MH) ? 0 : A[j * MW + i]; }
+
+    var D = Math.max(3, worldW * 0.1);                      // extrusion depth
+    var steps = Math.max(3, Math.round(D / (px * 0.9)));
+    var out = [];
+    function push(X, Y, Z, nx, ny, nz, kind){
+      var u = Math.random() * 2 - 1, v = Math.random() * 2 - 1, w = Math.random() * 2 - 1;
+      out.push(X, Y, Z, nx, ny, nz, kind, u, v, w);
+    }
+    for (var j = 0; j < MH; j++) for (var i = 0; i < MW; i++) {
+      if (a(i, j) < 0.5) continue;
+      var X = (i - MW / 2) * px, Y = (j - MH / 2) * px;
+      push(X, Y, -D / 2, 0, 0, -1, 0);
+      push(X, Y, D / 2, 0, 0, 1, 0);
+      if (a(i - 1, j) < 0.5 || a(i + 1, j) < 0.5 || a(i, j - 1) < 0.5 || a(i, j + 1) < 0.5) {
+        var gx = a(i - 1, j) - a(i + 1, j), gy = a(i, j - 1) - a(i, j + 1), gl = Math.sqrt(gx * gx + gy * gy) || 1;
+        for (var s = 1; s < steps; s++) push(X, Y, -D / 2 + D * s / steps, gx / gl, gy / gl, 0, 1);
+      }
+    }
+    return { p: new Float32Array(out), w: worldW };
+  }
+
+  function ease(t){ return 1 - Math.pow(1 - t, 3); }
+  function wrap(a){ while (a > Math.PI) a -= 2 * Math.PI; while (a < -Math.PI) a += 2 * Math.PI; return a; }
+
+  /* scatter transitions: assemble on start, explode + reform when the name switches */
+  function assemble(){ showName = true; scatter = 1.3; trans = { from: 1.3, to: 0, t0: performance.now(), dur: reduce ? 1 : 1400 }; }
+  function switchName(){
+    if (trans) return;
+    if (reduce) { nameIdx = (nameIdx + 1) % NAMES.length; shape = shapes[nameIdx]; syncLang(); return; }
+    trans = { from: 0, to: 1, t0: performance.now(), dur: 380, then: function(){
+      nameIdx = (nameIdx + 1) % NAMES.length; shape = shapes[nameIdx]; syncLang();
+      trans = { from: 1, to: 0, t0: performance.now(), dur: 950 };
+    } };
+  }
+  var langBtn = $("langBtn");
+  function syncLang(){ langBtn.textContent = nameIdx === 0 ? "中" : "EN"; }
+  langBtn.addEventListener("click", function(){ lastUser = performance.now(); switchName(); });
+
+  /* ---- background: a dot grid pulled toward the cursor like a gravity well ---- */
+  function drawDots(t, now){
+    var ax, ay, str;
+    if (ptr.active && now - ptr.last < 6000) { ax = ptr.x; ay = ptr.y; str = 1; }
+    else { ax = cols * (0.5 + 0.32 * Math.sin(t * 0.21)); ay = rows * (0.5 + 0.3 * Math.sin(t * 0.29 + 1)); str = 0.55; }
+    var life = [];
+    ripples.forEach(function(r){ var age = (now - r.t0) / 1000; if (age < 1.5) life.push({ x: r.x, y: r.y, R: age * 75, a: 1 - age / 1.5 }); });
+    ripples = ripples.filter(function(r){ return now - r.t0 < 1500; });
+    for (var gy = 1; gy < rows; gy += 2) {
+      var odd = ((gy - 1) >> 1) & 1;
+      for (var gx = odd ? 2 : 0; gx < cols; gx += 4) {
+        var dx = ax - gx, dy = (ay - gy) * ar, dd = Math.sqrt(dx * dx + dy * dy) + 0.001;
+        var mag = Math.min(dd * 0.6, str * 150 / (dd + 9));
+        var px = gx + dx / dd * mag, py = gy + (dy / dd * mag) / ar;
+        var glow = str * Math.max(0, 1 - dd / 24);
+        for (var q = 0; q < life.length; q++) {
+          var L = life[q], rdx = gx - L.x, rdy = (gy - L.y) * ar, rd = Math.sqrt(rdx * rdx + rdy * rdy) + 0.001;
+          var ring = Math.exp(-(rd - L.R) * (rd - L.R) / 20) * L.a;
+          px += rdx / rd * ring * 3; py += rdy / rd * ring * 3 / ar; glow += ring * 0.9;
+        }
+        var cx = Math.round(px), cy = Math.round(py);
+        if (cx < 0 || cy < 0 || cx >= cols || cy >= rows) continue;
+        var i = cy * cols + cx;
+        if (glow > 0.14) cMid[i] = glow > 0.8 ? 64 : glow > 0.55 ? 111 : glow > 0.32 ? 43 : 58;   // @ o + :
+        else {
+          var wave = 0.5 + 0.5 * Math.sin(gx * 0.09 + gy * 0.17 - t * 1.1);
+          cBg[i] = wave > 0.82 ? 58 : 46;                                                          // : .
+        }
+      }
+    }
+  }
+
+  /* ---- the 3D name: rotate every point, project, keep the nearest per cell, shade by normal ---- */
+  function drawName(t){
+    var P = shape.p, n = P.length;
+    var cyw = Math.cos(yaw), syw = Math.sin(yaw), cp = Math.cos(pitch), sp = Math.sin(pitch);
+    var Dcam = shape.w * 1.6;
+    var CX = cols * (isPhone() ? 0.5 : 0.45), CY = rows * (isPhone() ? 0.3 : 0.4);
+    /* a point light that drifts left and right in front of the name, so faces get a gradient */
+    var LPx = Math.sin(t * 0.5) * shape.w * 0.55, LPy = -shape.w * 0.22, LPz = -shape.w * 0.45;
+    var sc = scatter * scatter * shape.w * 0.7, scattering = scatter > 0.02;
+    for (var k = 0; k < n; k += 10) {
+      var x = P[k], y = P[k + 1], z = P[k + 2];
+      if (scattering) { x += P[k + 7] * sc; y += P[k + 8] * sc * 0.6; z += P[k + 9] * sc; }
+      var x1 = x * cyw + z * syw, z1 = -x * syw + z * cyw;     // yaw (turn left/right)
+      var y1 = y * cp - z1 * sp, z2 = y * sp + z1 * cp;         // pitch (tilt up/down)
+      var nx = P[k + 3], ny = P[k + 4], nz = P[k + 5];
+      var nx1 = nx * cyw + nz * syw, nz1 = -nx * syw + nz * cyw;
+      var ny1 = ny * cp - nz1 * sp, nz2 = ny * sp + nz1 * cp;
+      if (nz2 > 0.2 && !scattering) continue;                   // facing away from the camera
+      var depth = Dcam + z2; if (depth < 1) continue;
+      var s = Dcam / depth;                                     // perspective: nearer = bigger
+      var col = Math.round(CX + x1 * s), row = Math.round(CY + y1 * s / ar);
+      if (col < 0 || row < 0 || col >= cols || row >= rows) continue;
+      var i = row * cols + col, inv = 1 / depth;
+      if (inv <= zb[i]) continue;                               // something nearer already drew here
+      zb[i] = inv;
+      var lx = LPx - x1, ly = LPy - y1, lz = LPz - z2, ll = Math.sqrt(lx * lx + ly * ly + lz * lz) || 1;
+      var diff = Math.max(0, (nx1 * lx + ny1 * ly + nz2 * lz) / ll);
+      var lum = P[k + 6] ? 0.1 + 0.9 * diff : 0.42 + 0.58 * diff;   // keep the front readable, let the sides show the shape
+      cBg[i] = SP;
+      if (P[k + 6]) { cMid[i] = SIDE.charCodeAt(Math.min(SIDE.length - 1, (lum * SIDE.length) | 0)); cFg[i] = SP; }
+      else { cFg[i] = FRONT.charCodeAt(Math.min(FRONT.length - 1, (lum * FRONT.length) | 0)); cMid[i] = SP; }
+    }
+  }
+
+  function toText(buf){
+    var out = new Array(rows);
+    for (var r = 0; r < rows; r++) out[r] = String.fromCharCode.apply(null, buf.subarray(r * cols, (r + 1) * cols));
+    return out.join("\n");
+  }
+
+  function frame(now){
+    var t = reduce ? 3 : now / 1000;
+    /* motion: idle sway + tilt toward the cursor, or free spin with inertia after a drag */
+    var tYaw = (reduce ? 0 : Math.sin(t * 0.42) * 0.42) + (ptr.active ? (ptr.nx - 0.5) * 0.5 : 0);
+    var tPitch = (reduce ? 0 : Math.sin(t * 0.3) * 0.1) + (ptr.active ? (ptr.ny - 0.5) * 0.3 : 0);
+    if (!spin) {
+      yaw += vyaw; pitch += vpitch; vyaw *= 0.95; vpitch *= 0.9;
+      if (Math.abs(vyaw) < 0.012) yaw += wrap(tYaw - yaw) * 0.045;
+      if (Math.abs(vpitch) < 0.01) pitch += (tPitch - pitch) * 0.05;
+    }
+    if (trans) {
+      var p = Math.min(1, (now - trans.t0) / trans.dur);
+      scatter = trans.from + (trans.to - trans.from) * (trans.to > trans.from ? p * p : ease(p));
+      if (p >= 1) { var then = trans.then; trans = null; if (then) then(); }
+    }
+    if (!reduce && showName && !trans && now - lastUser > 12000 && now - ptr.last > 6000) { lastUser = now; switchName(); }
+
+    cBg.fill(SP); cMid.fill(SP); cFg.fill(SP); zb.fill(0);
+    drawDots(t, now);
+    if (showName && shape) drawName(t);
+    preBg.textContent = toText(cBg);
+    preMid.textContent = toText(cMid);
+    preFg.textContent = toText(cFg);
+  }
+
+  var running = true, lastFrame = 0;
+  function loop(now){
+    if (running && now - lastFrame >= 33) { lastFrame = now; frame(now); }   // ~30fps is plenty for ASCII
+    requestAnimationFrame(loop);
+  }
+  document.addEventListener("visibilitychange", function(){ running = !document.hidden; });
+
+  /* ---- pointer: gravity follows the cursor; drag the background to spin; click for a ripple ---- */
+  window.addEventListener("pointermove", function(e){
+    ptr.x = e.clientX / cw; ptr.y = e.clientY / ch;
+    ptr.nx = e.clientX / innerWidth; ptr.ny = e.clientY / innerHeight;
+    ptr.active = true; ptr.last = performance.now();
+    if (spin) {
+      var dx = e.clientX - spin.x0, dy = e.clientY - spin.y0;
+      if (!spin.moved && Math.abs(dx) + Math.abs(dy) > 4) { spin.moved = true; desk.classList.add("spinning"); }
+      if (spin.moved) {
+        var ny = spin.yaw0 + dx * 0.009, np = Math.max(-0.7, Math.min(0.7, spin.pitch0 - dy * 0.005));
+        vyaw = ny - yaw; vpitch = np - pitch; yaw = ny; pitch = np;
+      }
+    }
+  }, { passive: true });
+  document.documentElement.addEventListener("pointerleave", function(){ ptr.active = false; });
+
+  var desk = $("desktop");
+  desk.addEventListener("pointerdown", function(e){
+    if (e.target !== desk && !e.target.closest(".sr")) return;   // icons handle their own pointer events
+    e.preventDefault();
+    lastUser = performance.now();
+    spin = { x0: e.clientX, y0: e.clientY, yaw0: yaw, pitch0: pitch, moved: false };
+    try { desk.setPointerCapture(e.pointerId); } catch(err){}
+    window.dispatchEvent(new Event("desk:background"));
+  });
+  function endSpin(e){
+    if (!spin) return;
+    if (!spin.moved && e && e.type === "pointerup") ripples.push({ x: e.clientX / cw, y: e.clientY / ch, t0: performance.now() });
+    spin = null; desk.classList.remove("spinning");
+    vyaw = Math.max(-0.25, Math.min(0.25, vyaw));
+  }
+  desk.addEventListener("pointerup", endSpin);
+  desk.addEventListener("pointercancel", endSpin);
+
+  var rt;
+  window.addEventListener("resize", function(){ clearTimeout(rt); rt = setTimeout(measure, 150); });
+
+  function bootWall(){
+    if (bootWall.done) return; bootWall.done = true;
+    measure();
+    requestAnimationFrame(loop);
+    if (window.__introDone) assemble(); else window.addEventListener("intro:done", assemble);
+  }
+  var fl = [];
+  if (document.fonts && document.fonts.load) {
+    fl.push(document.fonts.load("800 40px 'JetBrains Mono'"));
+    fl.push(document.fonts.load("900 40px " + CJK, "高世钦"));
+  }
+  Promise.race([Promise.all(fl), new Promise(function(r){ setTimeout(r, 2500); })]).then(bootWall, bootWall);
+
+
+  /* =====================================================================
+     DESKTOP: menu bar clock, icons, Finder-style windows, dock, terminal
+     ===================================================================== */
+
+  /* ---- clock in the menu bar ---- */
+  var clock = $("clock");
+  var fmtDay = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", weekday: "short", month: "short", day: "numeric" });
+  var fmtTime = new Intl.DateTimeFormat("en-US", { timeZone: "America/New_York", hour: "numeric", minute: "2-digit" });
+  function tick(){ var d = new Date(); clock.textContent = (isPhone() ? "" : fmtDay.format(d).replace(",", "") + "  ") + fmtTime.format(d); }
+  tick(); setInterval(tick, 10000);
+
+  /* ---- live npm downloads (keeps the baked-in number if the request fails) ---- */
+  if (window.fetch) fetch("https://api.npmjs.org/downloads/point/last-year/vaultbix-cli")
+    .then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(j){ if (j && j.downloads > 0) $("npmdl").textContent = j.downloads.toLocaleString("en-US"); })
+    .catch(function(){});
+
+  /* ---- window manager ---- */
+  var Z = 100, opened = 0, openers = {};
+  var dockBtns = {};
+  Array.prototype.forEach.call(document.querySelectorAll("#dock [data-open]"), function(b){ dockBtns[b.dataset.open] = b; });
+
+  function win(id){ return $("win-" + id); }
+  function center(el){ var r = el.getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; }
+
+  function place(w){
+    var W = Math.min(+w.dataset.w || 680, innerWidth - 40), H = Math.min(+w.dataset.h || 500, innerHeight - 150);
+    var left, top;
+    if (w.id === "win-readme") { left = 28; top = innerHeight - H - 110; }
+    else {
+      var n = opened++ % 5;
+      left = (innerWidth - W) / 2 - 70 + n * 30;
+      top = Math.max(40, (innerHeight - H) / 2 - 50 + n * 26);
+    }
+    w.style.width = W + "px"; w.style.height = H + "px";
+    w.style.left = Math.max(8, Math.min(innerWidth - W - 8, left)) + "px";
+    w.style.top = Math.max(36, Math.min(innerHeight - H - 90, top)) + "px";
+    w.dataset.placed = "1";
+  }
+
+  function focusWin(w){
+    w.style.zIndex = ++Z;
+    Array.prototype.forEach.call(document.querySelectorAll(".win.active"), function(o){ if (o !== w) o.classList.remove("active"); });
+    w.classList.add("active");
+  }
+  function topWin(){
+    var best = null;
+    Array.prototype.forEach.call(document.querySelectorAll(".win.open:not(.min):not(.closing)"), function(w){ if (!best || +w.style.zIndex > +best.style.zIndex) best = w; });
+    return best;
+  }
+
+  function openWin(id, fromEl){
+    var w = win(id); if (!w) return;
+    hideHint();
+    if (fromEl) openers[id] = fromEl;
+    if (w.classList.contains("open") && !w.classList.contains("min")) { focusWin(w); return; }
+    var wasMin = w.classList.contains("min");
+    if (!w.dataset.placed && !isPhone()) place(w);
+    w.classList.add("open"); w.classList.remove("min");
+    focusWin(w);
+    if (dockBtns[id]) dockBtns[id].classList.add("running");
+    var src = wasMin && dockBtns[id] ? dockBtns[id] : fromEl;
+    if (!reduce && src && w.animate) {                         // grow out of the icon you clicked
+      var a = center(src), b = center(w);
+      w.animate([
+        { transform: "translate(" + (a.x - b.x) + "px," + (a.y - b.y) + "px) scale(.12)", opacity: 0 },
+        { transform: "none", opacity: 1 }
+      ], { duration: 380, easing: "cubic-bezier(.2,.85,.25,1)" });
+    }
+    if (id === "terminal") setTimeout(function(){ $("termIn").focus(); }, 60);
+    else w.focus({ preventScroll: true });
+  }
+
+  function closeWin(w){
+    var id = w.id.slice(4);
+    if (w.classList.contains("closing")) return;
+    w.classList.add("closing");
+    var done = function(){
+      w.classList.remove("open", "active", "max", "closing");
+      if (dockBtns[id]) dockBtns[id].classList.remove("running");
+      var nxt = topWin(); if (nxt) focusWin(nxt);
+      if (openers[id] && document.body.contains(openers[id])) openers[id].focus({ preventScroll: true });
+    };
+    if (reduce || !w.animate) return done();
+    w.animate([{ transform: "none", opacity: 1 }, { transform: "scale(.94)", opacity: 0 }], { duration: 160, easing: "ease-in" }).onfinish = done;
+  }
+
+  function minWin(w){
+    var id = w.id.slice(4), target = dockBtns[id];
+    var done = function(){ w.classList.add("min"); w.classList.remove("active"); var nxt = topWin(); if (nxt) focusWin(nxt); };
+    if (reduce || !target || !w.animate || isPhone()) return done();
+    var a = center(w), b = center(target);
+    w.animate([{ transform: "none", opacity: 1 }, { transform: "translate(" + (b.x - a.x) + "px," + (b.y - a.y) + "px) scale(.08)", opacity: .2 }],
+      { duration: 360, easing: "cubic-bezier(.5,0,.75,0)" }).onfinish = done;
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll(".win"), function(w){
+    w.addEventListener("pointerdown", function(){ focusWin(w); });
+    w.querySelector(".l-close").addEventListener("click", function(){ closeWin(w); });
+    w.querySelector(".l-min").addEventListener("click", function(){ minWin(w); });
+    w.querySelector(".l-max").addEventListener("click", function(){ w.classList.toggle("max"); });
+    var bar = w.querySelector(".win-bar");
+    bar.addEventListener("dblclick", function(e){ if (!e.target.closest("button")) w.classList.toggle("max"); });
+    /* drag by the title bar */
+    var drag = null;
+    bar.addEventListener("pointerdown", function(e){
+      if (e.target.closest("button") || isPhone() || w.classList.contains("max")) return;
+      drag = { x: e.clientX, y: e.clientY, l: w.offsetLeft, t: w.offsetTop };
+      try { bar.setPointerCapture(e.pointerId); } catch(err){}
+    });
+    bar.addEventListener("pointermove", function(e){
+      if (!drag) return;
+      var l = drag.l + e.clientX - drag.x, t = drag.t + e.clientY - drag.y;
+      w.style.left = Math.max(-w.offsetWidth + 120, Math.min(innerWidth - 120, l)) + "px";
+      w.style.top = Math.max(28, Math.min(innerHeight - 50, t)) + "px";
+    });
+    bar.addEventListener("pointerup", function(){ drag = null; });
+    bar.addEventListener("pointercancel", function(){ drag = null; });
+  });
+
+  document.addEventListener("keydown", function(e){
+    if (e.key !== "Escape" || !window.__introDone) return;
+    var w = topWin(); if (w) { e.preventDefault(); closeWin(w); }
+  });
+
+  /* everything with data-open (menu bar, dock, sidebar) opens that window */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-open]:not(.icon)"), function(b){
+    b.addEventListener("click", function(){
+      var id = b.dataset.open;
+      if (id === "work") showProj(null);
+      openWin(id, b);
+      if (dockBtns[id] && !reduce && b.closest("#dock")) { b.classList.remove("bounce"); void b.offsetWidth; b.classList.add("bounce"); }
+    });
+  });
+
+  /* ---- desktop icons: click to open, drag to rearrange ---- */
+  var icons = Array.prototype.slice.call(document.querySelectorAll(".icon"));
+  var moved = false;
+  function layoutIcons(){
+    if (isPhone()) { icons.forEach(function(ic){ ic.style.left = ic.style.top = ""; }); return; }
+    var perCol = Math.max(1, Math.floor((innerHeight - 28 - 130) / 104));
+    icons.forEach(function(ic, i){
+      if (ic.dataset.moved) return;
+      ic.style.left = (innerWidth - 24 - 96 - Math.floor(i / perCol) * 104) + "px";
+      ic.style.top = (18 + (i % perCol) * 104) + "px";
+    });
+  }
+  layoutIcons();
+  window.addEventListener("resize", layoutIcons);
+  function deselect(){ icons.forEach(function(ic){ ic.classList.remove("sel"); }); }
+  window.addEventListener("desk:background", deselect);
+  icons.forEach(function(ic){
+    var d = null;
+    ic.addEventListener("pointerdown", function(e){
+      deselect(); ic.classList.add("sel");
+      if (isPhone()) return;
+      d = { x: e.clientX, y: e.clientY, l: ic.offsetLeft, t: ic.offsetTop, on: false };
+      try { ic.setPointerCapture(e.pointerId); } catch(err){}
+    });
+    ic.addEventListener("pointermove", function(e){
+      if (!d) return;
+      var dx = e.clientX - d.x, dy = e.clientY - d.y;
+      if (!d.on && Math.abs(dx) + Math.abs(dy) > 5) { d.on = true; ic.classList.add("dragging"); }
+      if (d.on) { ic.style.left = (d.l + dx) + "px"; ic.style.top = Math.max(0, d.t + dy) + "px"; }
+    });
+    ic.addEventListener("pointerup", function(){
+      if (d && d.on) { ic.dataset.moved = "1"; moved = true; setTimeout(function(){ moved = false; }, 0); }
+      ic.classList.remove("dragging"); d = null;
+    });
+    ic.addEventListener("click", function(){
+      if (moved) return;                                   // that was a drag, not a click
+      if (ic.dataset.open === "work") showProj(null);
+      openWin(ic.dataset.open, ic);
+    });
+  });
+
+  /* ---- Work window: folder grid -> project detail, with back + breadcrumbs ---- */
+  var workGrid = $("workGrid"), workBack = $("workBack"), workCrumbs = $("workCrumbs"), workStatus = $("workStatus");
+  var projNames = { tai: "tai", vaultbix: "vaultbix", berkeley: "berkeley-cs" };
+  function showProj(key){
+    workGrid.hidden = !!key;
+    Array.prototype.forEach.call(document.querySelectorAll("article.proj"), function(a){ a.hidden = a.dataset.proj !== key; });
+    workBack.disabled = !key;
+    workCrumbs.innerHTML = key ? "<span>Work &rsaquo;</span> " + projNames[key] : "Work";
+    workStatus.textContent = key ? projNames[key] : "3 items";
+    Array.prototype.forEach.call(document.querySelectorAll("#win-work .side button"), function(b){
+      b.classList.toggle("on", key ? b.dataset.proj === key : b.dataset.open === "work");
+    });
+    var body = document.querySelector("#win-work .pane-body"); if (body) body.scrollTop = 0;
+  }
+  Array.prototype.forEach.call(document.querySelectorAll("#win-work [data-proj]"), function(b){
+    b.addEventListener("click", function(){ showProj(b.dataset.proj); });
+  });
+  workBack.addEventListener("click", function(){ showProj(null); });
+
+  /* ---- copy email ---- */
+  Array.prototype.forEach.call(document.querySelectorAll("[data-copy]"), function(b){
+    b.addEventListener("click", function(){
+      var v = b.dataset.copy;
+      var ok = function(){ b.textContent = "Copied"; setTimeout(function(){ b.textContent = "Copy"; }, 1500); };
+      if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(v).then(ok, function(){ location.href = "mailto:" + v; });
+      else location.href = "mailto:" + v;
+    });
+  });
+
+  /* ---- dock magnification: icons near the cursor grow ---- */
+  var dock = $("dock"), dockItems = Array.prototype.slice.call(dock.querySelectorAll("button"));
+  if (!reduce && window.matchMedia("(hover:hover)").matches) {
+    dock.addEventListener("pointermove", function(e){
+      dockItems.forEach(function(b){
+        var r = b.getBoundingClientRect(), d = Math.abs(e.clientX - (r.left + r.width / 2));
+        var s = 52 * (1 + 0.55 * Math.max(0, 1 - d / 120));
+        b.style.width = b.style.height = s + "px";
+      });
+    });
+    dock.addEventListener("pointerleave", function(){ dockItems.forEach(function(b){ b.style.width = b.style.height = ""; }); });
+  }
+
+  /* ---- hint fades after the first real interaction ---- */
+  var hintEl = $("hint");
+  function hideHint(){ hintEl.classList.add("gone"); }
+  setTimeout(hideHint, 14000);
+
+  /* ---- terminal ---- */
+  var tOut = $("termOut"), tIn = $("termIn"), hist = [], hi = 0;
+  function tPrint(html, cls){ var d = document.createElement("div"); if (cls) d.className = cls; d.innerHTML = html; tOut.appendChild(d); $("term").scrollTop = 1e9; }
+  function esc(s){ return s.replace(/[&<>"]/g, function(c){ return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  tPrint("Last login: " + new Date().toDateString() + " on ttys000");
+  tPrint("type <span class='p'>help</span> to see what I can do.");
+  var CMDS = {
+    help: function(){ tPrint("help      this list\nls        what's on the desktop\nopen X    open a folder (work, youtube, about, contact, readme)\nwhoami    who is carl\ncontact   how to reach me\nnpm       vaultbix-cli download count\nclear     clear the screen\nintro     replay the start screen\nexit      close the terminal".replace(/\n/g, "<br>")); },
+    ls: function(){ tPrint("<span class='ok'>Work/</span>  <span class='ok'>YouTube/</span>  <span class='ok'>About/</span>  <span class='ok'>Contact/</span>  README.txt  Terminal.app"); },
+    whoami: function(){ tPrint("carl gao (高世钦). builder, founder. currently building tai."); },
+    contact: function(){ tPrint("email   iamcarlgao@gmail.com<br>call    cal.com/carl-gao-czmatk/15min"); },
+    npm: function(){ tPrint("vaultbix-cli: " + $("npmdl").textContent + " downloads in the last 12 months"); },
+    clear: function(){ tOut.innerHTML = ""; },
+    intro: function(){ tPrint("rebooting..."); setTimeout(function(){ location.search = "?intro"; }, 400); },
+    exit: function(){ closeWin(win("terminal")); },
+    sudo: function(){ tPrint("nice try.", "err"); }
+  };
+  function run(line){
+    var parts = line.trim().split(/\s+/), cmd = (parts[0] || "").toLowerCase(), arg = (parts[1] || "").toLowerCase().replace(/\/$/, "").replace(".txt", "");
+    tPrint("<span class='p'>carl@gao ~ %</span> " + esc(line));
+    if (!cmd) return;
+    if (cmd === "open" || cmd === "cd") {
+      var ok = { work: 1, youtube: 1, about: 1, contact: 1, readme: 1 };
+      if (ok[arg]) { if (arg === "work") showProj(null); openWin(arg, null); tPrint("opening " + arg + "..."); }
+      else if (projNames[arg] || arg === "berkeley-cs") { var k = arg === "berkeley-cs" ? "berkeley" : arg; showProj(k); openWin("work", null); tPrint("opening work/" + projNames[k] + "..."); }
+      else tPrint(cmd + ": no such folder: " + esc(arg || "(nothing)"), "err");
+      return;
+    }
+    if (CMDS[cmd]) CMDS[cmd](); else tPrint("zsh: command not found: " + esc(cmd), "err");
+  }
+  tIn.addEventListener("keydown", function(e){
+    if (e.key === "Enter") { var v = tIn.value; if (v.trim()) hist.push(v); hi = hist.length; tIn.value = ""; run(v); }
+    else if (e.key === "ArrowUp") { if (hi > 0) { hi--; tIn.value = hist[hi]; } e.preventDefault(); }
+    else if (e.key === "ArrowDown") { if (hi < hist.length) { hi++; tIn.value = hist[hi] || ""; } e.preventDefault(); }
+    if (e.key !== "Escape") e.stopPropagation();
+  });
+  $("term").addEventListener("click", function(){ tIn.focus(); });
+
+  /* ---- after the start screen: put README out like a sticky note (desktop only) ---- */
+  function welcome(){ if (!isPhone()) setTimeout(function(){ openWin("readme", null); }, reduce ? 0 : 1500); }
+  if (window.__introDone) welcome(); else window.addEventListener("intro:done", welcome);
+
+})();
+</script>
+</body>
+</html>
